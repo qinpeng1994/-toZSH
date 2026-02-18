@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>心动告白 - 拍摄专用版</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { 
+    background: #000; 
+    font-family: "Microsoft YaHei", sans-serif; 
+    overflow: hidden; 
+    height: 100vh; 
+    touch-action: none;
+  }
+  #canvas { 
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100%; height: 100%; 
+    z-index: 0; 
+  }
+  .content {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 20px;
+    pointer-events: none; /* 防止误触影响拍摄 */
+  }
+  .name {
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-weight: 700;
+    background: linear-gradient(90deg, #ff3399, #ff66ff, #ff33cc, #ff99cc, #ff3399);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: 
+      gradient 4s linear infinite,
+      glow 2s ease-in-out infinite alternate,
+      scaleIn 1.5s ease-out forwards 0.5s;
+    opacity: 0;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 10px rgba(255, 51, 153, 0.4);
+  }
+  .text {
+    font-size: clamp(1rem, 4vw, 1.8rem);
+    color: #fff;
+    line-height: 2;
+    max-width: 85%;
+    opacity: 0;
+    animation: fadeInUp 2s forwards 1.8s;
+    text-shadow: 0 0 8px rgba(255, 102, 255, 0.3);
+  }
+
+  /* 核心动画 */
+  @keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  @keyframes glow {
+    0% { filter: drop-shadow(0 0 15px rgba(255, 60, 180, 0.6)); }
+    100% { filter: drop-shadow(0 0 30px rgba(255, 60, 180, 1)); }
+  }
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<div class="content">
+  <div class="name" id="name"></div>
+  <div class="text" id="msg"></div>
+</div>
+
+<script>
+  // ====================== 仅需修改这里 ======================
+  const herName = "宝贝";       // 替换成她的名字
+  const myWords = `
+遇见你，是我此生最美的意外
+我的目光所及，皆是你的身影
+我的心跳频率，因你而起伏
+${herName}，我爱你
+不止在字里行间，更在朝朝暮暮
+  `;
+  // ==========================================================
+
+  // 渲染文字
+  document.getElementById("name").innerText = `${herName} ❤️`;
+  document.getElementById("msg").innerText = myWords;
+
+  // 画布初始化
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+  let w = canvas.width = window.innerWidth;
+  let h = canvas.height = window.innerHeight;
+
+  // 窗口适配
+  window.addEventListener("resize", () => {
+    w = canvas.width = innerWidth;
+    h = canvas.height = innerHeight;
+  });
+
+  // 工具函数：随机数
+  const rand = (min, max) => Math.random() * (max - min) + min;
+
+  // 粒子类
+  class Particle {
+    constructor(x, y, type = "normal") {
+      this.x = x;
+      this.y = y;
+      this.type = type; // normal:普通粒子 | heart:爱心粒子 | firework:烟花粒子
+      
+      // 不同类型粒子参数
+      if (this.type === "heart") {
+        this.vx = rand(-2, 2);
+        this.vy = rand(1, 3);
+        this.alpha = rand(0.7, 1);
+        this.decay = rand(0.008, 0.012);
+        this.color = ["#ff3399", "#ff66ff", "#ff33cc"][Math.floor(rand(0, 3))];
+        this.size = rand(8, 15);
+        this.rotate = rand(0, 360);
+      } else if (this.type === "firework") {
+        this.vx = rand(-5, 5);
+        this.vy = rand(-5, 5);
+        this.alpha = 1;
+        this.decay = rand(0.01, 0.02);
+        this.color = ["#ff3399", "#ff66ff", "#ff99cc", "#ffffff"][Math.floor(rand(0, 4))];
+        this.size = rand(3, 8);
+      } else {
+        this.vx = rand(-3, 3);
+        this.vy = rand(-3, 3);
+        this.alpha = 1;
+        this.decay = rand(0.006, 0.018);
+        this.color = ["#ff3399", "#ff66ff", "#ff33cc", "#ff99cc"][Math.floor(rand(0, 4))];
+        this.size = rand(2, 7);
+      }
+    }
+
+    // 更新粒子状态
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      this.alpha -= this.decay;
+      if (this.type === "heart") this.rotate += 2; // 爱心旋转
+      // 重力影响
+      if (this.type !== "firework") this.vy += 0.05;
+    }
+
+    // 绘制粒子
+    draw() {
+      ctx.save();
+      ctx.globalAlpha = this.alpha;
+      ctx.fillStyle = this.color;
+
+      if (this.type === "heart") {
+        // 绘制爱心
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotate * Math.PI / 180);
+        ctx.scale(this.size / 20, this.size / 20);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.bezierCurveTo(15, -15, 30, 0, 0, 20);
+        ctx.bezierCurveTo(-30, 0, -15, -15, 0, 0);
+        ctx.fill();
+      } else {
+        // 绘制圆形粒子（烟花/普通）
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+  }
+
+  // 粒子数组
+  let particles = [];
+
+  // 生成爱心形状粒子群（开场特效）
+  function createHeartShape() {
+    const cx = w / 2;
+    const cy = h / 2;
+    for (let i = 0; i < 1000; i++) {
+      const angle = rand(0, Math.PI * 2);
+      const scale = rand(0.2, 1);
+      // 爱心公式
+      const x = 16 * Math.pow(Math.sin(angle), 3);
+      const y = -(13 * Math.cos(angle) - 5 * Math.cos(2*angle) - 2 * Math.cos(3*angle) - Math.cos(4*angle));
+      // 定位到屏幕中心并缩放
+      const px = cx + x * 25 * scale;
+      const py = cy + y * 25 * scale;
+      particles.push(new Particle(px, py));
+    }
+  }
+
+  // 生成烟花特效
+  function createFirework(x, y) {
+    for (let i = 0; i < 200; i++) {
+      particles.push(new Particle(x, y, "firework"));
+    }
+  }
+
+  // 生成爱心雨
+  function createHeartRain() {
+    for (let i = 0; i < 50; i++) {
+      const x = rand(0, w);
+      const y = rand(-100, -20);
+      particles.push(new Particle(x, y, "heart"));
+    }
+  }
+
+  // 全自动特效节奏（精准适配拍摄）
+  function autoEffectTimer() {
+    // 0秒：生成中心爱心粒子群
+    createHeartShape();
+    
+    // 2秒：中心烟花
+    setTimeout(() => createFirework(w/2, h/2.5), 2000);
+    
+    // 3.5秒：左侧烟花
+    setTimeout(() => createFirework(w/4, h/2), 3500);
+    
+    // 5秒：右侧烟花
+    setTimeout(() => createFirework(w*3/4, h/2), 5000);
+    
+    // 6.5秒：下方烟花
+    setTimeout(() => createFirework(w/2, h/1.8), 6500);
+    
+    // 7秒：开始爱心雨（持续）
+    setTimeout(() => {
+      setInterval(createHeartRain, 1500);
+    }, 7000);
+    
+    // 12秒：二次中心烟花（强化视觉）
+    setTimeout(() => createFirework(w/2, h/2), 12000);
+    
+    // 15秒：循环特效
+    setTimeout(autoEffectTimer, 15000);
+  }
+
+  // 动画主循环
+  function animate() {
+    // 半透明遮罩实现拖影效果
+    ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+    ctx.fillRect(0, 0, w, h);
+
+    // 更新并绘制所有粒子
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.update();
+      p.draw();
+      // 移除透明粒子
+      if (p.alpha <= 0) particles.splice(i, 1);
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  // 启动所有特效
+  animate();
+  autoEffectTimer();
+</script>
+</body>
+</html>
