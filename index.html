@@ -76,6 +76,51 @@
     from { opacity: 0; transform: translateY(30px); }
     to { opacity: 1; transform: translateY(0); }
   }
+  
+  /* 新增交互按钮样式 */
+  .interaction-btn {
+    position: absolute;
+    bottom: 100px;
+    padding: 12px 24px;
+    background: linear-gradient(45deg, #ff3399, #ff66ff);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    pointer-events: auto; /* 让按钮可以被点击 */
+    opacity: 0.8;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(255, 51, 153, 0.5);
+  }
+  
+  .interaction-btn:hover {
+    opacity: 1;
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(255, 51, 153, 0.8);
+  }
+  
+  .love-text {
+    position: absolute;
+    font-size: 1.5rem;
+    color: #ff66ff;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 20;
+    text-shadow: 0 0 10px rgba(255, 102, 255, 0.8);
+    animation: floatUp 3s forwards;
+  }
+  
+  @keyframes floatUp {
+    0% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-100px) scale(1.2);
+    }
+  }
 </style>
 </head>
 <body>
@@ -268,6 +313,171 @@ ${herName}，我爱你，我的宝。
   // 启动所有特效
   animate();
   autoEffectTimer();
+  
+  // 添加点击事件处理
+  let clickCount = 0;
+  const funnyMessages = [
+    "你点，你还点~",
+    "再点我就亲你一下~",
+    "调皮鬼又来啦！",
+    "怎么老喜欢点我呀？",
+    "你再点我就抱抱你~",
+    "哎呀，被你抓到了~",
+    "点这么多下想干嘛嘛~",
+    "再点我就不理你了哦~",
+    "点得我都害羞了呢~",
+    "要不要跟我聊聊天呀？",
+    "点这么多下，是不是特别喜欢我？",
+    "哼，不许再点了！",
+    "你点一下，我萌一下~",
+    "再点我就爆炸啦！(开玩笑的)",
+    "点得我心里痒痒的~"
+  ];
+  
+  // 特殊消息，当点击次数达到一定数量时触发
+  const specialMessages = [
+    "点这么多下，看来真的很喜欢我呢~ ❤️",
+    "这么喜欢点我，是不是想我想得睡不着觉？",
+    "哎呀，被你这么一通点，我的心都要跳出来了~",
+    "你这样点我，我会越来越喜欢你的哦~",
+    "点得我都脸红了，真是个小可爱~"
+  ];
+  
+  // 页面点击事件 - 在点击位置显示调皮文字
+  let rapidClickCount = 0;
+  let lastClickTime = 0;
+  
+  document.body.addEventListener('click', (e) => {
+    clickCount++;
+    
+    // 彩蛋功能：检查是否快速点击5次
+    const currentTime = new Date().getTime();
+    
+    // 如果在1秒内连续点击
+    if (currentTime - lastClickTime < 1000) {
+      rapidClickCount++;
+      
+      if (rapidClickCount === 5) {
+        // 触发彩蛋效果
+        triggerEasterEgg();
+        rapidClickCount = 0; // 重置计数
+        return; // 跳过常规点击效果
+      }
+    } else {
+      rapidClickCount = 1; // 重置计数
+    }
+    
+    lastClickTime = currentTime;
+    
+    let message;
+    // 每点击10次，显示一条特殊消息
+    if (clickCount % 10 === 0 && clickCount > 0) {
+      message = specialMessages[Math.floor(Math.random() * specialMessages.length)];
+    } else {
+      // 随机选择一条调皮消息
+      message = funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
+    }
+    
+    // 创建显示文字的元素
+    const textElement = document.createElement('div');
+    textElement.className = 'love-text';
+    textElement.textContent = message;
+    textElement.style.left = `${e.clientX}px`;
+    textElement.style.top = `${e.clientY}px`;
+    textElement.style.fontSize = `${Math.max(16, 20 + Math.random() * 10)}px`; // 随机字体大小
+    textElement.style.color = ['#ff3399', '#ff66ff', '#ff33cc', '#ff99cc'][Math.floor(Math.random() * 4)];
+    
+    document.body.appendChild(textElement);
+    
+    // 点击后也触发一个小烟花效果
+    createFirework(e.clientX, e.clientY);
+    
+    // 3秒后移除文字元素
+    setTimeout(() => {
+      textElement.remove();
+    }, 3000);
+  });
+  
+  // 双击事件 - 显示特殊爱心效果
+  document.body.addEventListener('dblclick', (e) => {
+    // 创建多个烟花效果
+    for (let i = 0; i < 5; i++) {
+      setTimeout(() => {
+        const offsetX = (Math.random() - 0.5) * 100;
+        const offsetY = (Math.random() - 0.5) * 100;
+        createFirework(e.clientX + offsetX, e.clientY + offsetY);
+      }, i * 150);
+    }
+    
+    // 显示双击特殊消息
+    const specialText = document.createElement('div');
+    specialText.className = 'love-text';
+    specialText.textContent = '双击？看来是真的喜欢我~ ❤️';
+    specialText.style.left = `${e.clientX}px`;
+    specialText.style.top = `${e.clientY}px`;
+    specialText.style.fontSize = '24px';
+    specialText.style.fontWeight = 'bold';
+    specialText.style.color = '#ff3399';
+    specialText.style.animation = 'floatUp 4s forwards';
+    
+    document.body.appendChild(specialText);
+    
+    // 4秒后移除特殊文字
+    setTimeout(() => {
+      specialText.remove();
+    }, 4000);
+  });
+  
+  
+  
+  // 彩蛋函数
+  function triggerEasterEgg() {
+    // 创建大量烟花效果
+    for (let i = 0; i < 10; i++) {
+      setTimeout(() => {
+        const x = Math.random() * w;
+        const y = Math.random() * h;
+        createFirework(x, y);
+      }, i * 100);
+    }
+    
+    // 显示彩蛋消息
+    const eggText = document.createElement('div');
+    eggText.className = 'love-text';
+    eggText.textContent = '★ 发现彩蛋 ★ 快速点击5次有惊喜！ ★';
+    eggText.style.left = `${w/2}px`;
+    eggText.style.top = `${h/2}px`;
+    eggText.style.fontSize = '28px';
+    eggText.style.fontWeight = 'bold';
+    eggText.style.color = '#ffff00';
+    eggText.style.animation = 'floatUp 5s forwards';
+    eggText.style.textShadow = '0 0 15px rgba(255, 255, 0, 1)';
+    
+    document.body.appendChild(eggText);
+    
+    // 5秒后移除彩蛋文字
+    setTimeout(() => {
+      eggText.remove();
+    }, 5000);
+  }
+  
+  // 创建飘浮的爱心文字
+  function createLoveText(text, x, y) {
+    const textElement = document.createElement('div');
+    textElement.className = 'love-text';
+    textElement.textContent = text;
+    textElement.style.left = `${x}px`;
+    textElement.style.top = `${y}px`;
+    textElement.style.fontSize = `${20 + Math.random() * 15}px`;
+    textElement.style.color = ['#ff3399', '#ff66ff', '#ff33cc'][Math.floor(Math.random() * 3)];
+    
+    document.body.appendChild(textElement);
+    
+    // 3秒后移除文字元素
+    setTimeout(() => {
+      textElement.remove();
+    }, 3000);
+  }
 </script>
 </body>
 </html>
