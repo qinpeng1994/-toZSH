@@ -331,20 +331,14 @@
         this.color = ["#ff1493", "#ff69b4", "#ff6b9d"][Math.floor(rand(0, 3))];
         this.size = rand(10, 18);
         this.rotate = rand(0, 360);
-      } else if (this.type === "firework") {
-        this.vx = rand(-3, 3);
-        this.vy = rand(-3, 3);
-        this.alpha = 0.8;
-        this.decay = rand(0.015, 0.025);
-        this.color = ["#ff1493", "#ff69b4", "#ffb6c1", "#ffffff"][Math.floor(rand(0, 4))];
-        this.size = rand(2, 6);
       } else {
-        this.vx = rand(-2, 2);  // 减小普通粒子速度
-        this.vy = rand(-2, 2);  // 减小普通粒子速度
+        // 普通粒子
+        this.vx = rand(-2, 2);
+        this.vy = rand(-2, 2);
         this.alpha = 1;
         this.decay = rand(0.01, 0.02);
         this.color = ["#ff1493", "#ff69b4", "#ff6b9d", "#ffb6c1"][Math.floor(rand(0, 4))];
-        this.size = rand(2, 5);  // 减小普通粒子大小
+        this.size = rand(2, 5);
       }
     }
 
@@ -412,14 +406,10 @@
     }
   }
 
-  // 生成烟花特效 - 手机优化版本
+  // 生成烟花特效 - 已禁用
   function createFirework(x, y) {
-    const isMobile = window.innerWidth <= 768;
-    const particleCount = isMobile ? 50 : 100;  // 手机端减少粒子数量
-    
-    for (let i = 0; i < particleCount; i++) {
-      particles.push(new Particle(x, y, "firework"));
-    }
+    // 烟花效果已移除
+    return;
   }
 
   // 生成爱心雨 - 性能优化
