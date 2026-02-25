@@ -428,33 +428,17 @@
     }
   }
 
-  // 全自动特效节奏（精准适配拍摄）
+  // 全自动特效节奏（已取消自动烟花，保留开场特效）
   function autoEffectTimer() {
     // 0秒：生成中心爱心粒子群
     createHeartShape();
-    
-    // 2秒：中心烟花
-    setTimeout(() => createFirework(w/2, h/2.5), 2000);
-    
-    // 3.5秒：左侧烟花
-    setTimeout(() => createFirework(w/4, h/2), 3500);
-    
-    // 5秒：右侧烟花
-    setTimeout(() => createFirework(w*3/4, h/2), 5000);
-    
-    // 6.5秒：下方烟花
-    setTimeout(() => createFirework(w/2, h/1.8), 6500);
     
     // 7秒：开始爱心雨（持续）
     setTimeout(() => {
       setInterval(createHeartRain, 1500);
     }, 7000);
     
-    // 12秒：二次中心烟花（强化视觉）
-    setTimeout(() => createFirework(w/2, h/2), 12000);
-    
-    // 15秒：循环特效
-    setTimeout(autoEffectTimer, 15000);
+    // 取消自动烟花，只保留开场特效和爱心雨
   }
 
   // 动画主循环
@@ -610,9 +594,6 @@
     
     document.body.appendChild(textElement);
     
-    // 点击后也触发一个小烟花效果
-    createFirework(e.clientX, e.clientY);
-    
     // 3秒后移除文字元素
     setTimeout(() => {
       textElement.remove();
@@ -621,19 +602,21 @@
   
   // 双击事件 - 显示特殊爱心效果
   document.body.addEventListener('dblclick', (e) => {
-    // 创建多个烟花效果
+    // 创建多个爱心效果（替代烟花）
     for (let i = 0; i < 5; i++) {
       setTimeout(() => {
-        const offsetX = (Math.random() - 0.5) * 100;
-        const offsetY = (Math.random() - 0.5) * 100;
-        createFirework(e.clientX + offsetX, e.clientY + offsetY);
-      }, i * 150);
+        const angle = (i / 5) * Math.PI * 2;
+        const distance = 50;
+        const x = e.clientX + Math.cos(angle) * distance;
+        const y = e.clientY + Math.sin(angle) * distance;
+        particles.push(new Particle(x, y, "heart"));
+      }, i * 100);
     }
     
     // 显示双击特殊消息
     const specialText = document.createElement('div');
     specialText.className = 'love-text';
-    specialText.textContent = '❤️ 双击？看来是真的喜欢我~ ❤️';
+    specialText.textContent = '双击？看来是真的喜欢我~ ❤️';
     specialText.style.left = `${e.clientX}px`;
     specialText.style.top = `${e.clientY}px`;
     specialText.style.fontSize = '26px';
@@ -653,13 +636,13 @@
   
   // 彩蛋函数
   function triggerEasterEgg() {
-    // 创建大量烟花效果
-    for (let i = 0; i < 10; i++) {
+    // 创建大量爱心效果（替代烟花）
+    for (let i = 0; i < 50; i++) {
       setTimeout(() => {
         const x = Math.random() * w;
         const y = Math.random() * h;
-        createFirework(x, y);
-      }, i * 100);
+        particles.push(new Particle(x, y, "heart"));
+      }, i * 20);
     }
     
     // 显示彩蛋消息
