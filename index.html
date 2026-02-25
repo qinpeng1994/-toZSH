@@ -349,7 +349,7 @@
       this.alpha -= this.decay;
       if (this.type === "heart") this.rotate += 2; // 爱心旋转
       // 重力影响
-      if (this.type !== "firework") this.vy += 0.05;
+      if (this.type === "heart") this.vy += 0.05;
     }
 
     // 绘制粒子
@@ -406,11 +406,13 @@
     }
   }
 
-  // 生成烟花特效 - 已禁用
+  // 生成烟花特效 - 已注释
+  /*
   function createFirework(x, y) {
     // 烟花效果已移除
     return;
   }
+  */
 
   // 生成爱心雨 - 性能优化
   function createHeartRain() {
@@ -461,7 +463,7 @@
 
   // 启动所有特效
   animate();
-  autoEffectTimer();
+  // autoEffectTimer(); // 注释掉自动特效，包括可能的烟花效果
   
   // 添加点击事件处理
   let clickCount = 0;
