@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -7,18 +8,19 @@
 <title>zsh</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { 
-    background: #000; 
-    font-family: "Microsoft YaHei", sans-serif; 
-    overflow: hidden; 
-    height: 100vh; 
+  body {
+    background: #000;
+    font-family: "Microsoft YaHei", sans-serif;
+    overflow: hidden;
+    height: 100vh;
     touch-action: none;
+    -webkit-tap-highlight-color: transparent;
   }
-  #canvas { 
-    position: fixed; 
-    top: 0; left: 0; 
-    width: 100%; height: 100%; 
-    z-index: 0; 
+  #canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
   }
   .content {
     position: relative;
@@ -31,7 +33,7 @@
     align-items: center;
     text-align: center;
     padding: 20px;
-    pointer-events: none; /* 防止误触影响拍摄 */
+    pointer-events: none;
   }
   .name {
     font-size: clamp(2rem, 5vw, 3rem);
@@ -41,232 +43,173 @@
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    animation: 
-      heartBeat 2s ease-in-out infinite,
-      gradient 6s linear infinite,
-      glow 2s ease-in-out infinite alternate,
-      scaleIn 1.5s ease-out forwards 0.5s;
+    animation: gradient 6s linear infinite, scaleIn 1.5s ease-out forwards 0.5s;
     opacity: 0;
     margin-bottom: 0.5rem;
     text-shadow: 0 0 15px rgba(255, 20, 147, 0.5);
     letter-spacing: 2px;
+    will-change: transform, opacity;
   }
+
   .text {
     font-size: clamp(0.9rem, 2.5vw, 1.3rem);
-    color: #fff;
     line-height: 1.5;
     max-width: 75%;
     opacity: 0;
     animation: fadeInUp 2s forwards 1.8s;
-    text-shadow: 0 0 12px rgba(255, 105, 180, 0.4);
     background: linear-gradient(90deg, #ffb6c1, #ff69b4, #ffb6c1);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     font-weight: 500;
     margin-top: 0.5rem;
+    will-change: transform, opacity;
   }
 
-  /* 核心动画 */
-  @keyframes heartBeat {
-    0% { transform: scale(1); }
-    15% { transform: scale(1.1); }
-    30% { transform: scale(1); }
-    45% { transform: scale(1.15); }
-    60% { transform: scale(1); }
-    75% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-  }
-  
   @keyframes gradient {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
   }
-  
-  @keyframes glow {
-    0% { filter: drop-shadow(0 0 20px rgba(255, 20, 147, 0.7)); }
-    100% { filter: drop-shadow(0 0 35px rgba(255, 20, 147, 1)); }
-  }
-  
+
   @keyframes scaleIn {
     from { opacity: 0; transform: scale(0.8); }
     to { opacity: 1; transform: scale(1); }
   }
-  
+
   @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(30px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  
-  /* 新增交互按钮样式 */
-  .interaction-btn {
-    position: absolute;
-    bottom: 100px;
-    padding: 12px 24px;
-    background: linear-gradient(45deg, #ff3399, #ff66ff);
-    color: white;
-    border: none;
-    border-radius: 50px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    pointer-events: auto; /* 让按钮可以被点击 */
-    opacity: 0.8;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 20px rgba(255, 51, 153, 0.5);
-  }
-  
-  .interaction-btn:hover {
-    opacity: 1;
-    transform: scale(1.05);
-    box-shadow: 0 0 30px rgba(255, 51, 153, 0.8);
-  }
-  
+
   .love-text {
     position: absolute;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     color: #ffffff;
     opacity: 0;
     pointer-events: none;
     z-index: 20;
-    text-shadow: 
-      0 0 12px rgba(255, 255, 255, 0.9),
-      0 0 20px rgba(255, 255, 255, 0.6),
-      0 0 30px rgba(255, 255, 255, 0.4),
-      0 0 40px rgba(0, 0, 0, 0.8);
-    animation: floatUp 3s forwards;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+    animation: floatUp 2.5s forwards;
     font-weight: 600;
+    will-change: transform, opacity;
   }
-  
+
   @keyframes floatUp {
-    0% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-    100% {
-      opacity: 0;
-      transform: translateY(-100px) scale(1.2);
-    }
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-80px) scale(1.1); }
   }
-  
-  /* 心形装饰动画 */
-  .heart-decoration {
-    position: fixed;
-    font-size: 2rem;
-    z-index: 5;
-    opacity: 0.7;
-    animation: float 8s infinite ease-in-out;
-    pointer-events: none;
-  }
-  
-  .heart1 {
-    top: 10%;
-    left: 10%;
-    animation-delay: 0s;
-    font-size: 1.5rem;
-    color: #ff69b4;
-  }
-  
-  .heart2 {
-    top: 15%;
-    right: 15%;
-    animation-delay: 1s;
-    font-size: 2rem;
-    color: #ff1493;
-  }
-  
-  .heart3 {
-    bottom: 20%;
-    left: 20%;
-    animation-delay: 2s;
-    font-size: 1.8rem;
-    color: #ffb6c1;
-  }
-  
-  .heart4 {
-    bottom: 15%;
-    right: 10%;
-    animation-delay: 3s;
-    font-size: 1.6rem;
-    color: #ff6b9d;
-  }
-  
-  .heart5 {
-    top: 40%;
-    left: 5%;
-    animation-delay: 4s;
-    font-size: 1.3rem;
-    color: #ff69b4;
-  }
-  
-  @keyframes float {
-    0%, 100% {
-      transform: translateY(0px) rotate(0deg);
-    }
-    25% {
-      transform: translateY(-20px) rotate(5deg);
-    }
-    50% {
-      transform: translateY(-40px) rotate(-5deg);
-    }
-    75% {
-      transform: translateY(-20px) rotate(3deg);
-    }
-  }
-  
+
   /* 避让空间 */
   .spacer {
     flex: 1;
-    min-height: 12rem; /* 与红心大小匹配 */
+    min-height: 12rem;
   }
-  
-  /* 中心跳动红心 */
+
+  /* 中心跳动红心 - 使用CSS动画优化 */
   .center-heart {
     position: absolute;
-    font-size: 12rem;
+    font-size: clamp(6rem, 20vw, 12rem);
     color: #ff0000;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 15;
-    animation: 
-      heartbeat 1.2s ease-in-out infinite,
-      pulse 2s ease-in-out infinite alternate,
-      glow-heart 2s ease-in-out infinite alternate;
-    text-shadow: 
-      0 0 30px rgba(255, 0, 0, 0.8),
-      0 0 50px rgba(255, 0, 0, 0.6),
-      0 0 70px rgba(255, 0, 0, 0.4);
+    animation: heartbeat 1.2s ease-in-out infinite, glow-heart 2s ease-in-out infinite alternate;
+    text-shadow: 0 0 30px rgba(255, 0, 0, 0.8), 0 0 60px rgba(255, 0, 0, 0.5);
+    pointer-events: auto;
+    cursor: pointer;
+    will-change: transform;
+    transition: transform 0.1s ease;
+    user-select: none;
+  }
+
+  .center-heart:active {
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+
+  @keyframes heartbeat {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    15% { transform: translate(-50%, -50%) scale(1.1); }
+    30% { transform: translate(-50%, -50%) scale(1); }
+    45% { transform: translate(-50%, -50%) scale(1.15); }
+  }
+
+  @keyframes glow-heart {
+    0% { text-shadow: 0 0 20px rgba(255, 0, 0, 0.8), 0 0 40px rgba(255, 0, 0, 0.5); }
+    100% { text-shadow: 0 0 40px rgba(255, 0, 0, 1), 0 0 80px rgba(255, 0, 0, 0.7), 0 0 100px rgba(255, 0, 0, 0.4); }
+  }
+
+  /* 触摸波纹效果 */
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,105,180,0.6) 0%, transparent 70%);
+    pointer-events: none;
+    animation: rippleAnim 0.8s ease-out forwards;
+    will-change: transform, opacity;
+  }
+
+  @keyframes rippleAnim {
+    0% { width: 0; height: 0; opacity: 1; }
+    100% { width: 150px; height: 150px; opacity: 0; margin-left: -75px; margin-top: -75px; }
+  }
+
+  /* 长按指示器 */
+  .hold-indicator {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 105, 180, 0.8);
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .hold-indicator.active {
+    opacity: 1;
+    animation: holdPulse 1s ease-in-out infinite;
+  }
+
+  @keyframes holdPulse {
+    0%, 100% { transform: scale(0.8); border-color: rgba(255, 105, 180, 0.4); }
+    50% { transform: scale(1.2); border-color: rgba(255, 105, 180, 1); }
+  }
+
+  /* 提示文字 */
+  .hint {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.9rem;
+    z-index: 50;
+    animation: hintFade 5s forwards;
     pointer-events: none;
   }
-  
-  @keyframes heartbeat {
-    0% { transform: translate(-50%, -50%) scale(1); }
-    14% { transform: translate(-50%, -50%) scale(1.1); }
-    28% { transform: translate(-50%, -50%) scale(1); }
-    42% { transform: translate(-50%, -50%) scale(1.15); }
-    70% { transform: translate(-50%, -50%) scale(1); }
+
+  @keyframes hintFade {
+    0%, 70% { opacity: 1; }
+    100% { opacity: 0; }
   }
-  
-  @keyframes pulse {
-    0% { opacity: 0.8; }
-    100% { opacity: 1; }
+
+  /* 爱心爆炸效果 */
+  .heart-burst {
+    position: fixed;
+    font-size: 2rem;
+    pointer-events: none;
+    z-index: 30;
+    animation: burstUp 1s ease-out forwards;
+    will-change: transform, opacity;
   }
-  
-  @keyframes glow-heart {
-    0% { 
-      text-shadow: 
-        0 0 20px rgba(255, 0, 0, 0.8),
-        0 0 40px rgba(255, 0, 0, 0.6),
-        0 0 60px rgba(255, 0, 0, 0.4);
-    }
-    100% { 
-      text-shadow: 
-        0 0 30px rgba(255, 0, 0, 1),
-        0 0 50px rgba(255, 0, 0, 0.8),
-        0 0 70px rgba(255, 0, 0, 0.6),
-        0 0 90px rgba(255, 0, 0, 0.4);
-    }
+
+  @keyframes burstUp {
+    0% { opacity: 1; transform: scale(0) rotate(0deg); }
+    50% { opacity: 1; transform: scale(1.5) rotate(180deg); }
+    100% { opacity: 0; transform: scale(0.5) rotate(360deg) translateY(-100px); }
   }
 </style>
 </head>
@@ -276,27 +219,19 @@
   <div class="name" id="name"></div>
   <div class="spacer"></div>
   <div class="text" id="msg"></div>
-  <!-- 中心跳动红心 -->
   <div class="center-heart" id="heartElement">❤️</div>
 </div>
 
-<!-- 心形装饰元素 -->
-<div class="heart-decoration heart1">❤️</div>
-<div class="heart-decoration heart2">❤️</div>
-<div class="heart-decoration heart3">❤️</div>
-<div class="heart-decoration heart4">❤️</div>
-<div class="heart-decoration heart5">❤️</div>
+<div class="hold-indicator" id="holdIndicator"></div>
+<div class="hint">👆 点击屏幕任意处表达爱意</div>
 
 <script>
   // ====================== 仅需修改这里 ======================
-  const herName = "ZSH";       // 替换成她的名字
-  const myWords = `
-❤️ ${herName} ❤️
-章诗慧，我的宝，我爱你 ❤️
-  `;
+  const herName = "ZSH";
+  const myWords = `❤️ ${herName} ❤️
+章诗慧，我的宝，我爱你 ❤️`;
   // ==========================================================
 
-  // 渲染文字
   document.getElementById("name").innerText = `❤️ ${herName} ❤️`;
   document.getElementById("msg").innerText = myWords;
 
@@ -305,435 +240,307 @@
   const ctx = canvas.getContext("2d");
   let w = canvas.width = window.innerWidth;
   let h = canvas.height = window.innerHeight;
+  const isMobile = w <= 768;
 
-  // 窗口适配
   window.addEventListener("resize", () => {
     w = canvas.width = innerWidth;
     h = canvas.height = innerHeight;
   });
 
-  // 工具函数：随机数
   const rand = (min, max) => Math.random() * (max - min) + min;
 
-  // 粒子类 - 性能优化版
+  // 粒子类 - 优化版
   class Particle {
-    constructor(x, y, type = "normal") {
+    constructor(x, y, type = "heart") {
       this.x = x;
       this.y = y;
       this.type = type;
-      
-      // 不同类型粒子参数
-      if (this.type === "heart") {
-        this.vx = rand(-2, 2);
-        this.vy = rand(1, 3);
-        this.alpha = rand(0.8, 1);
-        this.decay = rand(0.008, 0.012);
-        this.color = ["#ff1493", "#ff69b4", "#ff6b9d"][Math.floor(rand(0, 3))];
-        this.size = rand(10, 18);
-        this.rotate = rand(0, 360);
-      } else {
-        // 普通粒子
-        this.vx = rand(-2, 2);
-        this.vy = rand(-2, 2);
-        this.alpha = 1;
-        this.decay = rand(0.01, 0.02);
-        this.color = ["#ff1493", "#ff69b4", "#ff6b9d", "#ffb6c1"][Math.floor(rand(0, 4))];
-        this.size = rand(2, 5);
-      }
+      this.vx = rand(-3, 3);
+      this.vy = rand(1, 4);
+      this.alpha = rand(0.8, 1);
+      this.decay = rand(0.01, 0.018);
+      this.color = ["#ff1493", "#ff69b4", "#ff6b9d", "#ffb6c1"][Math.floor(rand(0, 4))];
+      this.size = rand(8, 16);
+      this.rotate = rand(0, 360);
     }
 
-    // 更新粒子状态
     update() {
       this.x += this.vx;
       this.y += this.vy;
       this.alpha -= this.decay;
-      if (this.type === "heart") this.rotate += 2; // 爱心旋转
-      // 重力影响
-      if (this.type === "heart") this.vy += 0.05;
+      this.rotate += 3;
+      this.vy += 0.03;
     }
 
-    // 绘制粒子
     draw() {
       ctx.save();
-      ctx.globalAlpha = this.alpha;
+      ctx.globalAlpha = Math.max(0, this.alpha);
       ctx.fillStyle = this.color;
-
-      if (this.type === "heart") {
-        // 绘制爱心
-        ctx.translate(this.x, this.y);
-        ctx.rotate(this.rotate * Math.PI / 180);
-        ctx.scale(this.size / 20, this.size / 20);
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.bezierCurveTo(15, -15, 30, 0, 0, 20);
-        ctx.bezierCurveTo(-30, 0, -15, -15, 0, 0);
-        ctx.fill();
-      } else {
-        // 绘制圆形粒子（烟花/普通）
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.rotate * Math.PI / 180);
+      ctx.scale(this.size / 20, this.size / 20);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.bezierCurveTo(15, -15, 30, 0, 0, 20);
+      ctx.bezierCurveTo(-30, 0, -15, -15, 0, 0);
+      ctx.fill();
       ctx.restore();
     }
   }
 
-  // 粒子数组 - 添加数量限制
   let particles = [];
-  const MAX_PARTICLES = 500;  // 最大粒子数量限制
+  const MAX_PARTICLES = isMobile ? 150 : 300;
 
-  // 生成爱心形状粒子群（开场特效）- 性能优化
-  function createHeartShape() {
-    // 如果粒子过多，先清理一部分
-    if (particles.length > MAX_PARTICLES * 0.8) {
-      particles = particles.slice(-Math.floor(MAX_PARTICLES * 0.6));
+  // 爱心雨 - 优化
+  let lastRainTime = 0;
+  function createHeartRain(timestamp) {
+    if (timestamp - lastRainTime < (isMobile ? 2000 : 1200)) return;
+    lastRainTime = timestamp;
+
+    const heartCount = particles.filter(p => p.type === "heart").length;
+    if (heartCount > (isMobile ? 20 : 40)) return;
+
+    const count = isMobile ? 8 : 15;
+    for (let i = 0; i < count; i++) {
+      particles.push(new Particle(rand(0, w), rand(-150, -30)));
     }
-    
-    const cx = w / 2;
-    const cy = h / 2;
-    const particleCount = Math.min(800, MAX_PARTICLES - particles.length); // 限制粒子数量
-    
-    for (let i = 0; i < particleCount; i++) {
+  }
+
+  // 爱心形状开场
+  function createHeartShape() {
+    if (particles.length > MAX_PARTICLES * 0.5) return;
+    const cx = w / 2, cy = h / 2;
+    const count = isMobile ? 100 : 200;
+    for (let i = 0; i < count; i++) {
       const angle = rand(0, Math.PI * 2);
-      const scale = rand(0.2, 1);
-      // 爱心公式
+      const scale = rand(0.3, 1);
       const x = 16 * Math.pow(Math.sin(angle), 3);
       const y = -(13 * Math.cos(angle) - 5 * Math.cos(2*angle) - 2 * Math.cos(3*angle) - Math.cos(4*angle));
-      // 定位到屏幕中心并缩放
-      const px = cx + x * 25 * scale;
-      const py = cy + y * 25 * scale;
-      particles.push(new Particle(px, py));
+      particles.push(new Particle(cx + x * 20 * scale, cy + y * 20 * scale));
     }
-  }
-
-  // 生成烟花特效 - 已注释
-  /*
-  function createFirework(x, y) {
-    // 烟花效果已移除
-    return;
-  }
-  */
-
-  // 生成爱心雨 - 性能优化
-  function createHeartRain() {
-    // 限制同时存在的爱心数量
-    const heartParticles = particles.filter(p => p.type === "heart");
-    if (heartParticles.length > 30) return; // 如果爱心太多就不再生成
-    
-    const isMobile = window.innerWidth <= 768;
-    const count = isMobile ? 20 : 50; // 手机端减少爱心数量
-    
-    for (let i = 0; i < count; i++) {
-      const x = rand(0, w);
-      const y = rand(-100, -20);
-      particles.push(new Particle(x, y, "heart"));
-    }
-  }
-
-  // 全自动特效节奏（已取消自动烟花，保留开场特效）
-  function autoEffectTimer() {
-    // 0秒：生成中心爱心粒子群
-    createHeartShape();
-    
-    // 7秒：开始爱心雨（持续）
-    setTimeout(() => {
-      setInterval(createHeartRain, 1500);
-    }, 7000);
-    
-    // 取消自动烟花，只保留开场特效和爱心雨
   }
 
   // 动画主循环
-  function animate() {
-    // 半透明遮罩实现拖影效果 - 更轻盈
-    ctx.fillStyle = "rgba(0, 0, 0, 0.1)";  // 从0.2减小到0.1
+  function animate(timestamp) {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.15)";
     ctx.fillRect(0, 0, w, h);
 
-    // 更新并绘制所有粒子
+    createHeartRain(timestamp);
+
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
       p.update();
       p.draw();
-      // 移除透明粒子
       if (p.alpha <= 0) particles.splice(i, 1);
+    }
+
+    if (particles.length > MAX_PARTICLES) {
+      particles = particles.slice(-MAX_PARTICLES);
     }
 
     requestAnimationFrame(animate);
   }
 
-  // 启动所有特效
   animate();
-  // autoEffectTimer(); // 注释掉自动特效，包括可能的烟花效果
-  
-  // 添加点击事件处理
+  setTimeout(createHeartShape, 500);
+
+  // ========== 交互系统 ==========
   let clickCount = 0;
-  const funnyMessages = [
-    "你点我，我还点你~",
-    "再点我就亲你一下~",
-    "调皮鬼又来啦！",
-    "怎么老喜欢点我呀？",
-    "你再点我就抱抱你~",
-    "哎呀，被你抓到了~",
-    "点这么多下想干嘛嘛~",
-    "再点我就不理你了哦~",
-    "点得我都害羞了呢~",
-    "要不要跟我聊聊天呀？",
-    "点这么多下，是不是特别喜欢我？",
-    "哼，不许再点了！",
-    "你点一下，我萌一下~",
-    "再点我就爆炸啦！(开玩笑的)",
-    "点得我心里痒痒的~",
-    // 新增甜蜜私语
-    "想抱抱你~",
-    "好想亲你一下",
-    "你在我心里砰砰跳",
-    "忍不住想你了",
-    "你的笑容好甜呀",
-    "想和你一起看星星",
-    "每天都想见到你",
-    "你是我心中的小太阳"
-  ];
-  
-  // 特殊消息，当点击次数达到一定数量时触发
-  const specialMessages = [
-    "点这么多下，看来真的很喜欢我呢~",
-    "这么喜欢点我，是不是想我想得睡不着觉？",
-    "哎呀，被你这么一通点，我的心都要跳出来了~",
-    "你这样点我，我会越来越喜欢你的哦~",
-    "点得我都脸红了，真是个小可爱~"
-  ];
-  
-  // 渐进式表白消息系统
-  const progressiveLoveMessages = {
-    // 1-10次：调皮互动
-    playful: [
-      "你点我一下，我心跳一下~",
-      "再点一下嘛，好不好？",
-      "点点更健康哦~",
-      "你点得我好开心呀",
-      "这样点下去我们要不要约个会？"
-    ],
-    
-    // 11-30次：表达喜欢
-    like: [
-      "其实...我有点喜欢你了",
-      "每次你点我，我都很开心",
-      "你是我见过最特别的人",
-      "想和你分享每一个美好瞬间",
-      "你的存在让我的世界更亮了"
-    ],
-    
-    // 31-50次：深情告白
-    love: [
-      "我想我是真的爱上你了",
-      "你占据了我整个心房",
-      "想和你一起走过每一个春夏秋冬",
-      "你的笑容是我最大的幸福",
-      "愿意做你的专属小太阳"
-    ],
-    
-    // 50次以上：永恒承诺
-    forever: [
-      "我想和你永远在一起",
-      "你就是我要找的那个人",
-      "愿意用一生来爱你",
-      "无论风雨，我都会陪在你身边",
-      "你是我的唯一，我的永远"
-    ]
-  };
-  
-  // 页面点击事件 - 在点击位置显示调皮文字
-  let rapidClickCount = 0;
+  let rapidClicks = 0;
   let lastClickTime = 0;
-  
-  document.body.addEventListener('click', (e) => {
-    clickCount++;
-    
-    // 彩蛋功能：检查是否快速点击5次
-    const currentTime = new Date().getTime();
-    
-    // 如果在1秒内连续点击
-    if (currentTime - lastClickTime < 1000) {
-      rapidClickCount++;
-      
-      if (rapidClickCount === 5) {
-        // 触发彩蛋效果
-        triggerEasterEgg();
-        rapidClickCount = 0; // 重置计数
-        return; // 跳过常规点击效果
-      }
-    } else {
-      rapidClickCount = 1; // 重置计数
-    }
-    
-    lastClickTime = currentTime;
-    
-    let message;
-    // 渐进式表白系统
-    if (clickCount <= 10) {
-      // 1-10次：调皮互动 + 甜蜜私语
-      const allPlayfulMessages = [...funnyMessages, ...progressiveLoveMessages.playful];
-      message = allPlayfulMessages[Math.floor(Math.random() * allPlayfulMessages.length)];
-    } else if (clickCount <= 30) {
-      // 11-30次：表达喜欢
-      message = progressiveLoveMessages.like[Math.floor(Math.random() * progressiveLoveMessages.like.length)];
-    } else if (clickCount <= 50) {
-      // 31-50次：深情告白
-      message = progressiveLoveMessages.love[Math.floor(Math.random() * progressiveLoveMessages.love.length)];
-    } else {
-      // 50次以上：永恒承诺
-      message = progressiveLoveMessages.forever[Math.floor(Math.random() * progressiveLoveMessages.forever.length)];
-    }
-    
-    // 创建显示文字的元素
-    const textElement = document.createElement('div');
-    textElement.className = 'love-text';
-    textElement.textContent = message;
-    textElement.style.left = `${e.clientX}px`;
-    textElement.style.top = `${e.clientY}px`;
-    textElement.style.fontSize = `${Math.max(16, 20 + Math.random() * 10)}px`; // 随机字体大小
-    textElement.style.color = ['#ffffff', '#ffff00', '#00ffff', '#ff00ff'][Math.floor(Math.random() * 4)];
-    
-    document.body.appendChild(textElement);
-    
-    // 3秒后移除文字元素
-    setTimeout(() => {
-      textElement.remove();
-    }, 3000);
-  });
-  
-  // 双击事件 - 显示特殊爱心效果
-  document.body.addEventListener('dblclick', (e) => {
-    // 创建多个爱心效果（替代烟花）
-    for (let i = 0; i < 5; i++) {
-      setTimeout(() => {
-        const angle = (i / 5) * Math.PI * 2;
-        const distance = 50;
-        const x = e.clientX + Math.cos(angle) * distance;
-        const y = e.clientY + Math.sin(angle) * distance;
-        particles.push(new Particle(x, y, "heart"));
-      }, i * 100);
-    }
-    
-    // 显示双击特殊消息
-    const specialText = document.createElement('div');
-    specialText.className = 'love-text';
-    specialText.textContent = '双击？看来是真的喜欢我~ ❤️';
-    specialText.style.left = `${e.clientX}px`;
-    specialText.style.top = `${e.clientY}px`;
-    specialText.style.fontSize = '26px';
-    specialText.style.fontWeight = 'bold';
-    specialText.style.color = '#ff69b4';
-    specialText.style.animation = 'floatUp 4s forwards';
-    
-    document.body.appendChild(specialText);
-    
-    // 4秒后移除特殊文字
-    setTimeout(() => {
-      specialText.remove();
-    }, 4000);
-  });
-  
-  
-  
-  // 彩蛋函数
-  function triggerEasterEgg() {
-    // 创建大量爱心效果（替代烟花）
-    for (let i = 0; i < 50; i++) {
-      setTimeout(() => {
-        const x = Math.random() * w;
-        const y = Math.random() * h;
-        particles.push(new Particle(x, y, "heart"));
-      }, i * 20);
-    }
-    
-    // 显示彩蛋消息
-    const eggText = document.createElement('div');
-    eggText.className = 'love-text';
-    eggText.textContent = '❤️ ★ 发现彩蛋 ★ 快速点击5次有惊喜！ ★ ❤️';
-    eggText.style.left = `${w/2}px`;
-    eggText.style.top = `${h/2}px`;
-    eggText.style.fontSize = '32px';
-    eggText.style.fontWeight = 'bold';
-    eggText.style.color = '#ff69b4';
-    eggText.style.animation = 'floatUp 5s forwards';
-    eggText.style.textShadow = '0 0 20px rgba(255, 105, 180, 1)';
-    
-    document.body.appendChild(eggText);
-    
-    // 5秒后移除彩蛋文字
-    setTimeout(() => {
-      eggText.remove();
-    }, 5000);
+  let holdTimer = null;
+  let isHolding = false;
+
+  const messages = {
+    playful: ["你点我一下，我心跳一下~", "再点一下嘛~", "点点更健康哦~", "你点得我好开心", "调皮鬼~"],
+    like: ["其实...我有点喜欢你了", "每次你点我，我都很开心", "你是最特别的人", "想和你分享每一个瞬间"],
+    love: ["我想我是真的爱上你了", "你占据了我整个心", "想和你走过每一天", "你的笑容是我最大的幸福"],
+    forever: ["我想和你永远在一起", "你就是我要找的人", "愿意用一生爱你", "你是我的唯一"]
+  };
+
+  const loveWords = ["❤️", "💕", "💗", "💖", "💝", "🌸", "✨", "💫", "🦋", "🌙"];
+
+  // 触摸波纹
+  function createRipple(x, y) {
+    const ripple = document.createElement('div');
+    ripple.className = 'ripple';
+    ripple.style.left = x + 'px';
+    ripple.style.top = y + 'px';
+    document.body.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 800);
   }
-  
-  // 创建飘浮的爱心文字
-  function createLoveText(text, x, y) {
-    const textElement = document.createElement('div');
-    textElement.className = 'love-text';
-    textElement.textContent = text;
-    textElement.style.left = `${x}px`;
-    textElement.style.top = `${y}px`;
-    textElement.style.fontSize = `${20 + Math.random() * 15}px`;
-    textElement.style.color = ['#ff1493', '#ff69b4', '#ff6b9d'][Math.floor(Math.random() * 3)];
-    
-    document.body.appendChild(textElement);
-    
-    // 3秒后移除文字元素
-    setTimeout(() => {
-      textElement.remove();
-    }, 3000);
+
+  // 爱心爆炸
+  function createHeartBurst(x, y) {
+    const count = isMobile ? 5 : 8;
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement('div');
+      el.className = 'heart-burst';
+      el.textContent = loveWords[Math.floor(Math.random() * loveWords.length)];
+      el.style.left = (x + rand(-30, 30)) + 'px';
+      el.style.top = (y + rand(-30, 30)) + 'px';
+      el.style.animationDelay = rand(0, 0.3) + 's';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1300);
+    }
   }
-  
-  // 特殊红心点击效果
+
+  // 创建漂浮文字
+  function createFloatingText(x, y, text, color = '#fff', size = 18) {
+    const el = document.createElement('div');
+    el.className = 'love-text';
+    el.textContent = text;
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    el.style.fontSize = size + 'px';
+    el.style.color = color;
+    el.style.animation = 'floatUp 2.5s forwards';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2500);
+  }
+
+  // 获取消息
+  function getMessage(count) {
+    let pool;
+    if (count <= 10) pool = messages.playful;
+    else if (count <= 30) pool = messages.like;
+    else if (count <= 50) pool = messages.love;
+    else pool = messages.forever;
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+
+  const holdIndicator = document.getElementById('holdIndicator');
   const heartElement = document.getElementById('heartElement');
-  if (heartElement) {
-    heartElement.style.pointerEvents = 'auto'; // 启用点击事件
-    
-    heartElement.addEventListener('click', (e) => {
-      e.stopPropagation(); // 阻止事件冒泡
-      
-      // 红心放大效果
-      heartElement.style.animation = 'none';
-      setTimeout(() => {
-        heartElement.style.animation = `
-          heartbeat 0.6s ease-in-out 3,
-          pulse 0.5s ease-in-out 6 alternate,
-          glow-heart 0.5s ease-in-out 6 alternate
-        `;
-      }, 10);
-      
-      // 创建大量爱心粒子效果
-      for (let i = 0; i < 50; i++) {
-        setTimeout(() => {
-          const angle = (i / 50) * Math.PI * 2;
-          const distance = 100 + Math.random() * 100;
-          const x = w/2 + Math.cos(angle) * distance;
-          const y = h/2 + Math.sin(angle) * distance;
-          particles.push(new Particle(x, y, "heart"));
-        }, i * 30);
+
+  // 长按事件
+  function startHold(x, y) {
+    isHolding = true;
+    holdIndicator.style.left = (x - 30) + 'px';
+    holdIndicator.style.top = (y - 30) + 'px';
+    holdIndicator.classList.add('active');
+
+    holdTimer = setTimeout(() => {
+      if (isHolding) {
+        createHeartBurst(x, y);
+        createFloatingText(x, y - 30, "长按真好~ 爱你 ❤️", '#ffff00', 22);
+        for (let i = 0; i < 20; i++) {
+          particles.push(new Particle(x + rand(-50, 50), y + rand(-50, 50)));
+        }
       }
-      
-      // 显示特殊表白文字
-      const specialLoveText = document.createElement('div');
-      specialLoveText.className = 'love-text';
-      specialLoveText.textContent = '❤️ 永远爱你 ❤️';
-      specialLoveText.style.left = `${w/2}px`;
-      specialLoveText.style.top = `${h/2 - 100}px`;
-      specialLoveText.style.fontSize = '36px';
-      specialLoveText.style.fontWeight = 'bold';
-      specialLoveText.style.color = '#ffff00';
-      specialLoveText.style.animation = 'floatUp 4s forwards';
-      specialLoveText.style.textShadow = '0 0 20px rgba(255, 255, 0, 1), 0 0 30px rgba(255, 255, 0, 0.8), 0 0 40px rgba(0, 0, 0, 0.9)';
-      
-      document.body.appendChild(specialLoveText);
-      
-      // 4秒后移除特殊文字
-      setTimeout(() => {
-        specialLoveText.remove();
-      }, 4000);
-    });
+    }, 600);
   }
+
+  function endHold(x, y) {
+    isHolding = false;
+    holdIndicator.classList.remove('active');
+    if (holdTimer) {
+      clearTimeout(holdTimer);
+      holdTimer = null;
+    }
+  }
+
+  // 中心红心点击
+  heartElement.addEventListener('click', (e) => {
+    e.stopPropagation();
+    createHeartBurst(w/2, h/2 - 50);
+    for (let i = 0; i < 30; i++) {
+      const angle = rand(0, Math.PI * 2);
+      const dist = rand(50, 150);
+      particles.push(new Particle(w/2 + Math.cos(angle) * dist, h/2 + Math.sin(angle) * dist));
+    }
+    createFloatingText(w/2, h/2 - 120, "永远爱你 ❤️", '#ffff00', 28);
+  });
+
+  // 触摸事件
+  document.body.addEventListener('touchstart', (e) => {
+    const touch = e.touches[0];
+    const x = touch.clientX;
+    const y = touch.clientY;
+
+    createRipple(x, y);
+
+    const now = Date.now();
+    if (now - lastClickTime < 500) {
+      rapidClicks++;
+      if (rapidClicks >= 3) {
+        // 三击彩蛋
+        rapidClicks = 0;
+        for (let i = 0; i < 30; i++) {
+          setTimeout(() => {
+            particles.push(new Particle(rand(0, w), rand(0, h)));
+          }, i * 30);
+        }
+        createFloatingText(w/2, h/2, "❤️ 彩蛋触发！ ❤️", '#ff69b4', 26);
+        return;
+      }
+    } else {
+      rapidClicks = 1;
+    }
+    lastClickTime = now;
+
+    startHold(x, y);
+  }, { passive: true });
+
+  document.body.addEventListener('touchend', (e) => {
+    const touch = e.changedTouches[0];
+    endHold(touch.clientX, touch.clientY);
+  }, { passive: true });
+
+  document.body.addEventListener('touchmove', () => {
+    if (holdTimer) {
+      clearTimeout(holdTimer);
+      holdTimer = setTimeout(() => {
+        if (isHolding) {
+          const touch = event.touches[0];
+          createHeartBurst(touch.clientX, touch.clientY);
+        }
+      }, 600);
+    }
+  }, { passive: true });
+
+  // 点击事件（兼容鼠标）
+  document.body.addEventListener('click', (e) => {
+    // 忽略中心红心的点击
+    if (e.target === heartElement) return;
+
+    createRipple(e.clientX, e.clientY);
+
+    const now = Date.now();
+    if (now - lastClickTime < 500) {
+      rapidClicks++;
+      if (rapidClicks >= 3) {
+        rapidClicks = 0;
+        for (let i = 0; i < 30; i++) {
+          setTimeout(() => particles.push(new Particle(rand(0, w), rand(0, h))), i * 30);
+        }
+        createFloatingText(w/2, h/2, "❤️ 彩蛋触发！ ❤️", '#ff69b4', 26);
+        return;
+      }
+    } else {
+      rapidClicks = 1;
+    }
+    lastClickTime = now;
+
+    clickCount++;
+    const msg = getMessage(clickCount);
+    const colors = ['#ffffff', '#ffff00', '#ff69b4', '#ff1493'];
+    createFloatingText(e.clientX, e.clientY, msg, colors[Math.floor(Math.random() * colors.length)]);
+
+    // 随机生成少量粒子
+    if (Math.random() > 0.7) {
+      particles.push(new Particle(e.clientX, e.clientY));
+    }
+  });
+
+  // 双击事件
+  document.body.addEventListener('dblclick', (e) => {
+    if (e.target === heartElement) return;
+    for (let i = 0; i < 10; i++) {
+      const angle = (i / 10) * Math.PI * 2;
+      particles.push(new Particle(e.clientX + Math.cos(angle) * 40, e.clientY + Math.sin(angle) * 40));
+    }
+    createFloatingText(e.clientX, e.clientY, "双击捕获真心~ 💕", '#ff69b4', 22);
+  });
 </script>
 </body>
 </html>
